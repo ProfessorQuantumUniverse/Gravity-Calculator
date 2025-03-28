@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cavendish Experiment - G Rechner</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- jsPDF für PDF Export (benötigt Internetverbindung beim Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js" defer></script>
+    <!-- Optional: Chart.js für spätere Diagramme -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script> -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cavendish Experiment - Gravitationskonstante (G) Rechner</h1>
+            <button id="dark-mode-toggle" title="Dunkelmodus umschalten">🌓</button>
+        </header>
+
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="tab-daten">1. Basisdaten & Konstanten</button>
+            <button class="tab-button" data-tab="tab-berechnung-end">2. Endausschlag-Methode</button>
+            <button class="tab-button" data-tab="tab-ergebnis">3. Beschleunigungs-Methode & Ergebnisse</button>
+        </nav>
+
+        <main>
+            <!-- Tab 1: Basisdaten & Konstanten -->
+            <div id="tab-daten" class="tab-content active">
+                <h2>1. Basisdaten & Berechnung von I und κ</h2>
+                <p>Geben Sie die grundlegenden Parameter des Experiments ein.</p>
+
+                <div class="input-group">
+                    <label for="mass-M">Masse der großen Kugeln (M):</label>
+                    <div class="input-wrapper">
+                         <input type="number" id="mass-M" step="any" placeholder="z.B. 1.5" min="0">
+                         <select id="unit-M">
+                            <option value="kg" selected>kg</option>
+                            <option value="g">g</option>
+                         </select>
+                         <span class="tooltip" data-tooltip="Masse jeder großen Kugel (m₁ im PDF). Muss positiv sein.">i</span>
+                    </div>
+                    <div class="formula-display" id="formula-display-M"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="mass-m">Masse der kleinen Kugeln (m):</label>
+                     <div class="input-wrapper">
+                        <input type="number" id="mass-m" step="any" placeholder="z.B. 0.02" min="0">
+                        <select id="unit-m">
+                            <option value="kg" selected>kg</option>
+                            <option value="g">g</option>
+                        </select>
+                        <span class="tooltip" data-tooltip="Masse jeder kleinen Kugel am Drehbalken (m₂ im PDF). Muss positiv sein.">i</span>
+                    </div>
+                     <div class="formula-display" id="formula-display-m"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="distance-l">Gesamtabstand kleine Kugeln (l):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="distance-l" step="any" placeholder="z.B. 0.1" min="0">
+                        <select id="unit-l">
+                            <option value="m" selected>m</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                        </select>
+                        <span class="tooltip" data-tooltip="Gesamtabstand zwischen den Mittelpunkten der kleinen Kugeln (l = 2*d im PDF). Muss positiv sein.">i</span>
+                    </div>
+                    <div class="formula-display" id="formula-display-l"></div>
+                </div>
+
+                <div class="input-group">
+                    <label for="period-T">Schwingungsperiode (T):</label>
+                     <div class="input-wrapper">
+                        <input type="number" id="period-T" step="any" placeholder="z.B. 600" min="0">
+                        <span>s</span>
+                        <span class="tooltip" data-tooltip="Zeit für eine vollständige Schwingung des Drehbalkens. Muss positiv sein.">i</span>
+                    </div>
+                     <div class="formula-display" id="formula-display-T"></div>
+                </div>
+
+                <button id="calculate-daten">I & κ Berechnen</button>
+
+                <div class="result-group">
+                    <h3>Berechnete Konstanten:</h3>
+                    <div class="output-field">
+                        <label>Trägheitsmoment (I):</label>
+                        <input type="text" id="output-I" readonly>
+                        <span>kg⋅m²</span>
+                        <span class="tooltip" data-tooltip="Trägheitsmoment des Balkens mit den kleinen Kugeln (J im PDF).">i</span>
+                    </div>
+                    <div class="formula-display calculation-formula" id="formula-I">Formel: I = 2 * m * (l/2)²</div>
+
+                    <div class="output-field">
+                        <label>Torsionskonstante (κ):</label>
+                        <input type="text" id="output-kappa" readonly>
+                        <span>N⋅m/rad</span>
+                         <span class="tooltip" data-tooltip="Richtgröße des Torsionsdrahtes (D im PDF).">i</span>
+                    </div>
+                    <div class="formula-display calculation-formula" id="formula-kappa">Formel: κ = (4 * π² * I) / T²</div>
+                </div>
+
+                <div class="visualization">
+                    <h4>Visualisierung (Schema):</h4>
+                    <svg id="visualization-daten" width="200" height="100" viewBox="-110 -50 220 100">
+                        <line x1="-50" y1="0" x2="50" y2="0" stroke="gray" stroke-width="2" id="vis-beam-line"/>
+                        <circle cx="-50" cy="0" r="8" fill="blue" id="vis-m1"/>
+                        <circle cx="50" cy="0" r="8" fill="blue" id="vis-m2"/>
+                        <text x="-50" y="-15" text-anchor="middle" font-size="10">m</text>
+                        <text x="50" y="-15" text-anchor="middle" font-size="10">m</text>
+                        <line x1="-50" y1="15" x2="50" y2="15" stroke="black" stroke-width="1" marker-start="url(#arrow-start)" marker-end="url(#arrow-end)" id="vis-l-arrow"/>
+                        <text x="0" y="30" text-anchor="middle" font-size="10" id="vis-l-label">l = ?</text>
+                         <defs>
+                            <marker id="arrow-start" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto"><polygon points="10 0, 10 7, 0 3.5" fill="black" /></marker>
+                            <marker id="arrow-end" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="black" /></marker>
+                          </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tab 2: Endausschlag-Methode -->
+            <div id="tab-berechnung-end" class="tab-content">
+                <h2>2. Berechnung von G (Endausschlag-Methode)</h2>
+                <p>Geben Sie den gemessenen stabilen Drehwinkel und den Abstand der Massen ein.</p>
+
+                 <div class="input-group">
+                    <label for="angle-theta">Drehwinkel (θ):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="angle-theta" step="any" placeholder="z.B. 0.0005">
+                        <select id="unit-theta">
+                            <option value="rad" selected>rad</option>
+                            <option value="deg">Grad (°)</option>
+                        </select>
+                        <span class="tooltip" data-tooltip="Stabiler Winkel (α im PDF), um den sich der Balken verdreht. Kann 0 sein.">i</span>
+                    </div>
+                     <div class="formula-display" id="formula-display-theta"></div>
+                 </div>
+
+                 <div class="input-group">
+                    <label for="distance-b">Abstand M zu m (b):</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="distance-b" step="any" placeholder="z.B. 0.05" min="0">
+                         <select id="unit-b">
+                            <option value="m" selected>m</option>
+                            <option value="cm">cm</option>
+                            <option value="mm">mm</option>
+                         </select>
+                        <span class="tooltip" data-tooltip="Abstand Mittelpunkt große Kugel (M) zu kleiner Kugel (m) im Gleichgewicht (b im PDF). Muss positiv sein.">i</span>
+                    </div>
+                     <div class="formula-display" id="formula-display-b"></div>
+                 </div>
+
+                <button id="calculate-g-end" disabled>G Berechnen (Endausschlag)</button>
+
+                 <div class="result-group">
+                     <h3>Ergebnis (Endausschlag):</h3>
+                     <div class="output-field">
+                        <label>G (unkorrigiert):</label>
+                        <input type="text" id="output-G-end" readonly>
+                        <span>N⋅m²/kg²</span>
+                        <span class="tooltip" data-tooltip="G berechnet aus dem stabilen Endwinkel θ, ohne Korrekturfaktor K.">i</span>
+                    </div>
+                    <div class="formula-display calculation-formula" id="formula-G-end">Formel: G = (κ * θ * b²) / (M * m * l)</div>
+
+                    <div class="output-field">
+                        <label>Korrekturfaktor (K):</label>
+                        <input type="text" id="output-K" readonly>
+                        <span class="tooltip" data-tooltip="Faktor zur Berücksichtigung der zweiten großen Kugel (Formel XI im PDF).">i</span>
+                    </div>
+                    <div class="formula-display calculation-formula" id="formula-K">Formel: K = 1 / (1 - (b / √(l² + b²))³)</div>
+
+                    <div class="output-field">
+                        <label>G (korrigiert):</label>
+                        <input type="text" id="output-G-end-corrected" readonly>
+                        <span>N⋅m²/kg²</span>
+                         <span class="tooltip" data-tooltip="G_Endausschlag (unkorrigiert) multipliziert mit dem Korrekturfaktor K. Dies ist das Hauptresultat dieser Methode.">i</span>
+                    </div>
+                 </div>
+
+                 <div class="visualization">
+                     <h4>Visualisierung der Kräfte (Schema):</h4>
+                     <!-- SVG bleibt gleich wie vorher -->
+                     <svg id="visualization-forces" width="250" height="150" viewBox="-125 -75 250 150">
+                         <g id="vis-beam-rotated" transform="rotate(0)">
+                            <line x1="-50" y1="0" x2="50" y2="0" stroke="gray" stroke-width="2" />
+                            <circle cx="-50" cy="0" r="8" fill="blue" id="vis-m1-force"/>
+                            <circle cx="50" cy="0" r="8" fill="blue" id="vis-m2-force"/>
+                         </g>
+                         <circle cx="-40" cy="-35" r="15" fill="red" id="vis-M1-force"/>
+                         <circle cx="40" cy="35" r="15" fill="red" id="vis-M2-force"/>
+                         <text x="-40" y="-55" text-anchor="middle" font-size="10">M</text>
+                         <text x="40" y="55" text-anchor="middle" font-size="10">M</text>
+                          <line id="force-arrow-1" x1="-50" y1="0" x2="-40" y2="-35" stroke="green" stroke-width="2" marker-end="url(#arrow-end-force)" transform="rotate(0)"/>
+                          <line id="force-arrow-2" x1="50" y1="0" x2="40" y2="35" stroke="green" stroke-width="2" marker-end="url(#arrow-end-force)" transform="rotate(0)"/>
+                           <defs>
+                            <marker id="arrow-end-force" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="green" /></marker>
+                          </defs>
+                           <path id="angle-arc" d="M 20 0 A 20 20 0 0 1 19.99 0.35" stroke="purple" stroke-width="1" fill="none"/>
+                           <text x="25" y="-10" font-size="10" fill="purple" id="vis-theta-label">θ = ?</text>
+                     </svg>
+                 </div>
+            </div>
+
+            <!-- Tab 3: Beschleunigungs-Methode & Ergebnisse -->
+            <div id="tab-ergebnis" class="tab-content">
+                <h2>3. Berechnung von G (Beschleunigungs-Methode) & Gesamtübersicht</h2>
+
+                <section id="result-accel-section">
+                    <h3>Beschleunigungs-Methode</h3>
+                    <p>Berechnung von G aus der Anfangsbeschleunigung des Lichtzeigers nach dem Umschwenken.</p>
+
+                    <div class="input-group">
+                        <label for="distance-L0">Abstand Pendel - Skala (L0):</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="distance-L0" step="any" placeholder="z.B. 6.385" min="0">
+                             <select id="unit-L0">
+                                <option value="m" selected>m</option>
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                            </select>
+                            <span class="tooltip" data-tooltip="Senkrechter Abstand Pendel (Spiegel) zur Skala (L₀ in Fig. 2). Muss positiv sein.">i</span>
+                        </div>
+                    </div>
+                     <div class="input-group">
+                        <label for="distance-L1">Versatz Skala - Normalenpunkt (L1):</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="distance-L1" step="any" placeholder="z.B. 1.370 oder 0" min="0">
+                            <select id="unit-L1">
+                                <option value="m" selected>m</option>
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                             </select>
+                            <span class="tooltip" data-tooltip="Versatz auf Skala zwischen Normalenpunkt (N) und Skalennullpunkt (O) (L₁ in Fig. 2). Kann 0 sein.">i</span>
+                        </div>
+                    </div>
+
+                     <h4>Steigungsberechnung (S vs t²):</h4>
+                     <div id="slope-data-input">
+                         <p>Geben Sie Zeitpunkte t ≥ 0 und Positionen S kurz nach dem Umschwenken ein (min. 2 Punkte):</p>
+                         <div class="data-point">
+                             <input type="number" class="time-input" placeholder="t (s)" step="any" min="0">
+                             <input type="number" class="position-input" placeholder="S (Position)" step="any">
+                             <select class="unit-S">
+                                <option value="m" selected>m</option>
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                            </select>
+                         </div>
+                          <div class="data-point">
+                             <input type="number" class="time-input" placeholder="t (s)" step="any" min="0">
+                             <input type="number" class="position-input" placeholder="S (Position)" step="any">
+                             <select class="unit-S">
+                                <option value="m" selected>m</option>
+                                <option value="cm">cm</option>
+                                <option value="mm">mm</option>
+                             </select>
+                         </div>
+                         <!-- Add more points dynamically or keep static -->
+                         <button id="add-data-point" type="button">+</button>
+                         <button id="calculate-slope">Steigung berechnen</button>
+                         <div id="slope-result" style="margin-top: 10px;"></div>
+                     </div>
+
+                     <div class="input-group">
+                        <label for="slope-accel">Steigung (ΔS / Δ(t²)):</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="slope-accel" step="any" placeholder="Aus Daten berechnen">
+                            <select id="unit-slope-accel">
+                                <option value="m/s2" selected>m/s²</option>
+                                <option value="mm/s2">mm/s²</option>
+                             </select>
+                            <span class="tooltip" data-tooltip="Steigung von S gegen t² ((S-S₁)/t² im PDF). Wird aus obigen Daten berechnet oder direkt eingegeben.">i</span>
+                        </div>
+                         <div class="formula-display" id="formula-display-slope"></div>
+                    </div>
+
+                    <button id="calculate-g-accel" disabled>G Berechnen (Beschleunigung)</button>
+
+                    <div class="output-field">
+                        <label>Berechnetes G (Beschleunigung):</label>
+                        <input type="text" id="output-G-accel" readonly>
+                        <span>N⋅m²/kg²</span>
+                        <span class="tooltip" data-tooltip="G berechnet aus der Anfangsbeschleunigung.">i</span>
+                    </div>
+                    <div class="formula-display calculation-formula" id="formula-G-accel">
+                         Formel: G = (b² * l * Steigung) / (4 * M * (L0² + L1²))
+                    </div>
+                    <p><small>Hinweis: Formel basiert auf Interpretation/Vereinfachung von Gl. XIII im PDF. Korrektheit prüfen!</small></p>
+                </section>
+
+                <hr>
+
+                <section id="comparison-export-history">
+                    <h3>Gesamtübersicht & Export</h3>
+                    <div id="g-comparison" class="result-group">
+                        <h4>Vergleich mit Standardwert:</h4>
+                        <p>Standardwert G (CODATA 2018): <code id="standard-g">6.67430 × 10⁻¹¹ N⋅m²/kg²</code></p>
+                        <p>Ihr G (Endausschlag, korr.): <code id="your-g-result-end">-</code> | Abweichung: <code id="g-deviation-end">-</code></p>
+                        <p>Ihr G (Beschleunigung): <code id="your-g-result-accel">-</code> | Abweichung: <code id="g-deviation-accel">-</code></p>
+                    </div>
+
+                     <div class="export-buttons">
+                         <button id="export-csv" disabled>Ergebnisse als CSV</button>
+                         <button id="export-pdf" disabled>Ergebnisse als PDF</button>
+                     </div>
+
+                    <div class="history">
+                        <h3>Berechnungsverlauf (Letzte 10)</h3>
+                        <div id="history-table-container">
+                            <p>Noch keine Berechnungen gespeichert.</p>
+                        </div>
+                         <button id="clear-history" style="display: none;">Verlauf löschen</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 G Rechner by Lorenzo Bay-Müller</p>
+        </footer>
+    </div>
+
+    <!-- NEUER BILDERBEREICH -->
+    <section class="image-gallery">
+        <h2>Zusätzliche Bilder</h2>
+        <div class="gallery-container">
+            <figure>
+                <!-- ERSETZE 'bild1.png' mit dem Pfad zu deinem ersten Bild -->
+                <img src="bild1.png" alt="Beschreibung für Bild 1">
+                <figcaption>Bildunterschrift 1 (optional)</figcaption>
+            </figure>
+            <figure>
+                <!-- ERSETZE 'bild2.png' mit dem Pfad zu deinem zweiten Bild -->
+                <img src="bild2.png" alt="Beschreibung für Bild 2">
+                <figcaption>Bildunterschrift 2 (optional)</figcaption>
+            </figure>
+            <figure>
+                <!-- ERSETZE 'bild3.png' mit dem Pfad zu deinem dritten Bild -->
+                <img src="bild3.png" alt="Beschreibung für Bild 3">
+                <figcaption>Bildunterschrift 3 (optional)</figcaption>
+            </figure>
+        </div>
+    </section>
+    <!-- ENDE NEUER BILDERBEREICH -->
+
+    <script src="script.js"></script>
+
+    
+</body>
+</html>
