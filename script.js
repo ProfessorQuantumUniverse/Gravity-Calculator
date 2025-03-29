@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput) {
           // Werte aus den Eingabefeldern abrufen und in Zahlen umwandeln
-         const abstandAussenflaechen = parseFloat(distAfInput.value);
+          const abstandAussenflaechen = parseFloat(distAfInput.value);
           const durchmesserKleineKugel = parseFloat(dmKkInput.value);
           const durchmesserGrosseKugel = parseFloat(dmGkInput.value);
 
@@ -388,9 +388,12 @@ document.addEventListener('DOMContentLoaded', () => {
           const radiusGrosseKugel = durchmesserGrosseKugel / 2;
 
           // Abstand der Mittelpunkte berechnen
-          const abstandMittelpunkte = abstandAussenflaechen + radiusKleineKugel + radiusGrosseKugel;
+          const abstandMittelpunkte1 = abstandAussenflaechen + radiusKleineKugel + radiusGrosseKugel;
+
+          const abstandMittelpunkte = abstandMittelpunkte1 / 100
 
           return abstandMittelpunkte;
+          const distanceLInput = abstandMittelpunkte
     }
 
         
