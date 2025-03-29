@@ -212,11 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ergebnisMittelpunktAbstand = berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput);
         console.log("Abstand der Mittelpunkte:", ergebnisMittelpunktAbstand);
+        ergebnisMittelpunktElement.textContent = ergebnisMittelpunktAbstand;
+
 
         // Enable G calculation buttons if I and κ are valid
         calculateGEndButton.disabled = false;
         calculateGAccelButton.disabled = false;
     }
+
+    const ergebnisMittelpunktElement = document.getElementById('ergebnis-mittelpunkt');
 
     function calculateG_Endausschlag() {
         resetGEndResults();
@@ -593,6 +597,8 @@ document.addEventListener('DOMContentLoaded', () => {
              input.addEventListener('change', listener); // Auch bei Auswahländerung
         }
     });
+
+    
 
     // --- Initial Setup ---
     applyDarkModePreference();
