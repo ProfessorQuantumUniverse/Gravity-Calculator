@@ -222,6 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ergebnisMittelpunktElement = document.getElementById('ergebnis-mittelpunkt');
 
+    // Input-Listener hinzufügen
+    distAfInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
+    dmKkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
+    dmGkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
+
+
     function calculateG_Endausschlag() {
         resetGEndResults();
         resetCorrectionFactor();
@@ -372,6 +378,14 @@ document.addEventListener('DOMContentLoaded', () => {
          validateInput(slopeAccelInput, false, true); // Re-validate the input field
      }
 
+    function berechneMittelpunktAbstandUndZeigeErgebnis() {
+        const ergebnisMittelpunktAbstand = berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput);
+        console.log("Abstand der Mittelpunkte:", ergebnisMittelpunktAbstand);
+
+        // Ergebnis im HTML-Element anzeigen
+        ergebnisMittelpunktElement.textContent = `Abstand der Mittelpunkte: ${ergebnisMittelpunktAbstand}`;
+    }
+
     function berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput) {
           // Werte aus den Eingabefeldern abrufen und in Zahlen umwandeln
           const abstandAussenflaechen = parseFloat(distAfInput.value);
@@ -395,6 +409,14 @@ document.addEventListener('DOMContentLoaded', () => {
           return abstandMittelpunkte;
           const distanceLInput = abstandMittelpunkte
     }
+
+    
+    const ergebnisMittelpunktElement = document.getElementById('ergebnis-mittelpunkt');
+
+    // Input-Listener hinzufügen
+    distAfInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
+    dmKkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
+    dmGkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
 
         
 
