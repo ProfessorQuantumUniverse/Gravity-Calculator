@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const visLLabel = document.getElementById('vis-l-label');
     const visBeamLine = document.getElementById('vis-beam-line');
     const visLArrow = document.getElementById('vis-l-arrow');
+    const distAfInput = document.getElementById('dist-af');
 
     // Tab 2 Elements (Endausschlag)
     const angleThetaInput = document.getElementById('angle-theta');
