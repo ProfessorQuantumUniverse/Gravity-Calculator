@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportPdfButton = document.getElementById('export-pdf');
     const historyTableContainer = document.getElementById('history-table-container');
     const clearHistoryButton = document.getElementById('clear-history');
+    const ergebnisMittelpunktElement = document.getElementById('ergebnis-mittelpunkt');
 
     // --- Constants ---
     const STANDARD_G = 6.67430e-11;
@@ -408,14 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     
-    const ergebnisMittelpunktElement = document.getElementById('ergebnis-mittelpunkt');
+    
 
-    // Input-Listener hinzufügen
-    distAfInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
-    dmKkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
-    dmGkInput.addEventListener('input', berechneMittelpunktAbstandUndZeigeErgebnis);
-
-        
+ 
 
 
 
