@@ -207,6 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
         outputKappa.value = formatNumber(calculatedKappa);
         updateFormulaDisplay(formulaKappaDisplay, 'κ = (4 * π² * I) / T² =', { I: calculatedI, T: T_s });
 
+        const ergebnisMittelpunktAbstand = berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput);
+        console.log("Abstand der Mittelpunkte:", ergebnisMittelpunktAbstand);
+
         // Enable G calculation buttons if I and κ are valid
         calculateGEndButton.disabled = false;
         calculateGAccelButton.disabled = false;
