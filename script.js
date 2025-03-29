@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const visBeamLine = document.getElementById('vis-beam-line');
     const visLArrow = document.getElementById('vis-l-arrow');
     const distAfInput = document.getElementById('dist-af');
+    const dmKkInput = document.getElementById('dm-kk');
+    const dmGkInput = document.getElementById('dm-gk');
 
     // Tab 2 Elements (Endausschlag)
     const angleThetaInput = document.getElementById('angle-theta');
@@ -359,6 +361,31 @@ document.addEventListener('DOMContentLoaded', () => {
          formulaDisplaySlope.innerHTML = `Aus ${N} Punkten berechnet.`;
          validateInput(slopeAccelInput, false, true); // Re-validate the input field
      }
+
+    function berechneMittelpunktAbstand(distAfInput, dmKkInput, dmGkInput) {
+          // Werte aus den Eingabefeldern abrufen und in Zahlen umwandeln
+         const abstandAussenflaechen = parseFloat(distAfInput.value);
+          const durchmesserKleineKugel = parseFloat(dmKkInput.value);
+          const durchmesserGrosseKugel = parseFloat(dmGkInput.value);
+
+          // Überprüfen, ob die Eingaben gültige Zahlen sind
+          if (isNaN(abstandAussenflaechen) || isNaN(durchmesserKleineKugel) || isNaN(durchmesserGrosseKugel)) {
+            return "Ungültige Eingabe"; // Oder eine Fehlermeldung anzeigen
+          }
+
+          // Radien der Kugeln berechnen
+          const radiusKleineKugel = durchmesserKleineKugel / 2;
+          const radiusGrosseKugel = durchmesserGrosseKugel / 2;
+
+          // Abstand der Mittelpunkte berechnen
+          const abstandMittelpunkte = abstandAussenflaechen + radiusKleineKugel + radiusGrosseKugel;
+
+          return abstandMittelpunkte;
+    }
+
+        
+
+
 
      function addDataPointRow() { /* Unverändert */
          const dataPointDiv = document.createElement('div');
