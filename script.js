@@ -187,6 +187,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const isValidm = validateInput(massmInput);
         const isValidl = validateInput(distanceLInput);
         const isValidT = validateInput(periodTInput);
+        const abstandAussenflaechen = parseFloat(distAfInput.value);
+        const durchmesserKleineKugel = parseFloat(dmKkInput.value);
+        const durchmesserGrosseKugel = parseFloat(dmGkInput.value);
 
         if (!isValidM || !isValidm || !isValidl || !isValidT) return;
 
